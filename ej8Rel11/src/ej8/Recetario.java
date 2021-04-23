@@ -15,19 +15,16 @@ public class Recetario {
 	}
 	
 	public void annadirReceta( Receta nuevaReceta) throws RecetaException {
-		if (!recetas.containsValue(nuevaReceta)) {
+		if (recetas.containsKey(nuevaReceta.getNombreReceta())) {
 			throw new RecetaException("Error, receta no encontrada");
 		}
+		
 		recetas.put(nuevaReceta.getNombreReceta(), nuevaReceta);
 	}
 	
 	public String listadoRecetasOrdenadasAlfabeticamente() throws RecetaException {
-		ArrayList<Receta>arrayOrdenado=new ArrayList<Receta>();
+		ArrayList<Receta>arrayOrdenado=new ArrayList<Receta>(recetas.values());
 		StringBuilder sb=new StringBuilder();
-		
-		for(Receta o:recetas.values()) {
-			arrayOrdenado.add(o);
-		}
 		
 		if(arrayOrdenado.size()==0) {
 			throw new RecetaException("Error, no se encontro ninguna receta");
@@ -41,24 +38,36 @@ public class Recetario {
 		
 		return sb.toString();
 	}
-		//CLASE ANONIMA PARA COMPARATOR
-		Comparator<Receta> comparador=new Comparator<Receta>() {
 
-			@Override
-			public int compare(Receta receta, Receta otro) {
-				
-				return Integer.compare(receta.getMinutosDePreparacion(), otro.getMinutosDePreparacion());
-			}
-		};
+		
 	public String listadoRecetasConIngredienteOrdenadasPorTiempoPreparacion(String ingrediente) throws RecetaException{
+		
+		if(recetas.size()==0) {
+			throw new RecetaException("Error, no se encontro ninguna receta");
+		}
+		
 		ArrayList<Receta>ordenado=new ArrayList<Receta>();
+		for (Receta receta : recetas.values()) {
+			if(receta.necesitaIngrediente(ingrediente)) {
+				ordenado.add(receta);
+			}
+		}
 		
+		Comparator<Receta> comparador=new Comparator<Receta>() {
+	
 		
-		
-		
-		
-		
-		
+		@Override
+		public int compare(Receta receta, Receta otro) {
+			
+			return Integer.compare(receta.getMinutosDePreparacion(), otro.getMinutosDePreparacion());
+		}
+	};
+		StringBuilder sb=new StringBuilder();
+		for (Receta receta : ordenado) {
+			sb.append(receta);
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 }
 
